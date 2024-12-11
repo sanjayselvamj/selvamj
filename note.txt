@@ -1,0 +1,59 @@
+<div *ngIf="post">
+  <!-- Post Title -->
+  <h1>{{ post.title }}</h1>
+
+  <!-- Display Image -->
+  <div *ngIf="post.image_url">
+    <img [src]="getFullUrl(post.image_url)" alt="Post Image" class="img-fluid">
+  </div>
+
+  <!-- Display Video -->
+  <div *ngIf="post.video_url">
+    <video [src]="getFullUrl(post.video_url)" controls class="video-fluid mt-3"></video>
+  </div>
+
+  <div class="card-body">
+    <p class="card-text">
+      {{ post.text_content ? post.text_content.slice(0, 100) : '' }}...
+      <a *ngIf="post.text_content && post.text_content.length > 100" (click)="expandText()">Read More</a>
+    </p>
+
+    <!-- Toggle Comments Button -->
+    <button class="btn btn-link p-0" (click)="toggleCommentSection(); $event.stopPropagation()">
+      {{ showComments ? 'Hide Comments' : 'Show Comments' }}
+    </button>
+
+    <!-- Comments Section -->
+    <div *ngIf="showComments">
+
+      <div *ngIf="comments.length > 0; else noComments">
+        <div *ngFor="let comment of comments" class="comment mb-2">
+          <p><strong>{{ comment.username || 'Anonymous' }}:</strong> {{ comment.content || 'No content' }}</p>
+        </div>
+      </div>
+
+      <ng-template #noComments>
+        <p>No comments yet.</p>
+      </ng-template>
+
+      <!-- Comment Input Area -->
+      <div class="mt-2">
+        <textarea #commentInput [(ngModel)]="newComment" class="form-control" placeholder="Add a comment..."></textarea>
+
+        <form (ngSubmit)="submitComment()" #commentForm="ngForm">
+          <button type="submit" class="btn btn-primary mt-1">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Like Button -->
+  <div class="card-footer text-center like-section">
+    <button class="like-button" (click)="toggleLike(post)" (mouseenter)="post.hovering = true" (mouseleave)="post.hovering = false">
+      <span class="like-count">{{ post.likes }} Likes</span>
+      <mat-icon *ngIf="!post.hovering">thumb_up</mat-icon>
+      <mat-icon *ngIf="post.hovering">favorite</mat-icon>
+    </button>
+  </div>
+</div>
